@@ -1,5 +1,3 @@
-# learned from AI that could switch the all() checks to any() and it's cleaner. any returns false if all 0.
-
 from pathlib import Path
 
 filepath = Path(__file__).parent / "input.txt"
@@ -39,17 +37,17 @@ for sequence in sequences:
                 )
             )
     for differences in reversed(differencesList):
-        if not all(point == 0 for point in differences):  # all 0 bottom list
+        if all(point == 0 for point in differences):  # all 0 bottom list
             continue
         else:
             differencesBelow = differencesList[differencesList.index(differences) + 1]
-            differences.append(
-                differences[-1] + differencesBelow[-1]
+            differences.insert(
+                0, differences[0] - differencesBelow[0]
             )  # otherwise add extrapolated value to end of each differences list
-    sequence.append(
-        sequence[-1] + differencesList[0][-1]
+    sequence.insert(
+        0, sequence[0] - differencesList[0][0]
     )  # apply extrapolation to original sequence
     # final answer is the sum of the extrapolated element for all the initial series
-    finalAnswer += sequence[-1]
+    finalAnswer += sequence[0]
 
-print("Sum of extrapolated values: " + str(finalAnswer))  # answer 1995001648
+print("Sum of extrapolated values: " + str(finalAnswer))  # answer 988
