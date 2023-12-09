@@ -1,3 +1,6 @@
+# I didn't initially see how this could be made efficient. And then I initially did a simple multiplication of all answers instead of LCM.
+# I Thought about trying to parallelize the code, I'm glad I didn't
+
 from math import lcm
 from pathlib import Path
 
@@ -7,9 +10,11 @@ rightLeftPattern = None
 nodeConnections = {}
 startNodes = []
 
+
 def followSteps():
     direction = rightLeftPattern[stepCount % len(rightLeftPattern)]
     return nodeConnections[currentNode][int(direction)]
+
 
 # def followSteps():
 #     newCurrentNodes = []
@@ -37,10 +42,12 @@ with open(filepath, "r") as file:
 stepCounts = []
 for currentNode in startNodes:
     stepCount = 0
-    while currentNode[-1] != 'Z':
+    while currentNode[-1] != "Z":
         currentNode = followSteps()
         stepCount += 1
     stepCounts.append(stepCount)
 
 print(stepCounts)
-print("Steps until all __Z: " + str(lcm(*stepCounts)))  # answer 17193155135366481952862161 (high), 13663968099527
+print(
+    "Steps until all __Z: " + str(lcm(*stepCounts))
+)  # answer 17193155135366481952862161 (high), 13663968099527

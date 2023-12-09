@@ -18,7 +18,7 @@ with open(filepath, "r") as file:
             continue
         if "=" in line:  # normal instruction
             node, connections = line.split(" = ")
-            left, right = connections.replace("(", "", 1).replace(")", "", 1).split(",")
+            left, right = connections.replace("(", "", 1).replace(")", "", 1).split(",") #Bard did [1:-1] to get rid of (), which would have been better
             nodeConnections[node] = (left.strip(), right.strip())
         else:  # initial RL pattern
             rightLeftPattern = line.replace("L", "0").replace("R", "1")
