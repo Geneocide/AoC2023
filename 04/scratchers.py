@@ -1,5 +1,5 @@
-import re
 from pathlib import Path
+
 filepath = Path(__file__).parent / "input.txt"
 
 with open(filepath, "r") as file:
@@ -9,7 +9,7 @@ pointsTotal = 0
 
 for line in lines:
     cardNumberSplit = line.split(":")
-    #cardNumber = re.sub("[^0-9]", "", cardNumberSplit[0])
+    # cardNumber = re.sub("[^0-9]", "", cardNumberSplit[0])
     winningNumbersStr, cardNumbersStr = cardNumberSplit[1].split(" | ")
     winningNumbers = winningNumbersStr.split()
     cardNumbers = cardNumbersStr.split()
@@ -24,4 +24,4 @@ for line in lines:
         points = points * 2
     pointsTotal += points
 
-print("Points Grand Total: " + str(pointsTotal)) #answer 25004
+print("Points Grand Total: " + str(pointsTotal))  # answer 25004

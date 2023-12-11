@@ -1,3 +1,6 @@
+# it occurs to me that the insert(0) could potentially be a source of unacceptable slowness due to having to increment all other list elements
+# it wasn't a problem with this input, but an efficiency could be gained in this case by simply deleting all but the first element of the list once extrapolation is complete
+
 from pathlib import Path
 
 filepath = Path(__file__).parent / "input.txt"
