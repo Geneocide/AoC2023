@@ -57,17 +57,17 @@ with open(filepath, "r") as file:
 
 
 def pressButton():
+    pressesLowPulses = 0
+    pressesHighPulses = 0
     pulses = []
     # button sends low pulse to the broadcaster
-    print("button -low-> broadcaster")
-    global totalLowPulses
-    global totalHighPulses
-    totalLowPulses += 1
+    # print("button -low-> broadcaster")
+    pressesLowPulses += 1
 
     for output in network["broadcaster"][1]:
         pulses.append((output, 0, "broadcaster"))
         # print(f"broadcaster -low-> {output}")
-        totalLowPulses += 1
+        pressesLowPulses += 1
 
     # pulses on one line are completed before next starts, process left to right within line
     while pulses:
@@ -83,14 +83,17 @@ def pressButton():
                     #     f"{thisNode} -{'low' if newPulse == 0 else 'high'}-> {output}"
                     # )
                     if newPulse == 0:
-                        totalLowPulses += 1
+                        pressesLowPulses += 1
                     else:
-                        totalHighPulses += 1
+                        pressesHighPulses += 1
+    return pressesLowPulses, pressesHighPulses
 
 
 # button has been pressed 1000 times
 for i in range(1000):
-    pressButton()
+    pressesLowPulses, pressesHighPulses = pressButton()
+    totalLowPulses += pressesLowPulses
+    totalHighPulses += pressesHighPulses
 
 # for node in network:
 #     print(f"{node} - {network[node]}")
