@@ -1,3 +1,8 @@
+# my solution relies on a bit of eye examinate of the input
+# I worked backwards from rx, noticed only input was bb and that bb was Conjunction type
+# and that all inputs into bb were also Conjunction, so I constructed this code to find when each input would be sending the high pulse and used LCM to extrapolate
+
+from math import lcm
 from pathlib import Path
 
 filepath = Path(__file__).parent / "input.txt"
@@ -35,6 +40,7 @@ class Conjunction(object):
         return 1  # otherwise send high
 
 
+# gets all nodes that input into a conjunction. needed for initialization
 def getConjunctionInputs(file, nodeName):
     inputs = []
     with open(filepath, "r") as file:
@@ -48,6 +54,7 @@ def getConjunctionInputs(file, nodeName):
 
 
 # parse input
+bbInputs = {}
 with open(filepath, "r") as file:
     for line in file:
         line = line.strip()
@@ -62,20 +69,19 @@ with open(filepath, "r") as file:
         elif sender[0] == "&":
             inputs = getConjunctionInputs(file, sender[1:])
             network[sender[1:]] = (Conjunction(inputs), sentTo.split(", "))
+            if sender[1:] == "bb":
+                for input in inputs:
+                    bbInputs[input] = None
 
 
-def pressButton():
-    pressesLowPulses = 0
-    pressesHighPulses = 0
+def pressButton(bbInputs):
     pulses = []
     # button sends low pulse to the broadcaster
     # print("button -low-> broadcaster")
-    pressesLowPulses += 1
 
     for output in network["broadcaster"][1]:
         pulses.append((output, 0, "broadcaster"))
         # print(f"broadcaster -low-> {output}")
-        pressesLowPulses += 1
 
     # pulses on one line are completed before next starts, process left to right within line
     while pulses:
@@ -83,35 +89,31 @@ def pressButton():
         pulses = pulses[1:]
 
         if thisNode in network:  # handles an output node the just absorbs pulses
+            # direct approach like below is too slow
+            # if thisNode == "rx" and pulseType == 0:
+            #     return True
             newPulse = network[thisNode][0].getPulse(pulseType, pulseFrom)
             if newPulse is not None:
                 for output in network[thisNode][1]:
                     pulses.append((output, newPulse, thisNode))
                     # print(
                     #     f"{thisNode} -{'low' if newPulse == 0 else 'high'}-> {output}"
-                    # )
-                    if newPulse == 0:
-                        pressesLowPulses += 1
-                    else:
-                        pressesHighPulses += 1
-    return pressesLowPulses, pressesHighPulses
+                # if this is one of the inputs for rx and it's giving a high pulse, record presses to get there
+                if thisNode in bbInputs and newPulse == 1:
+                    bbInputs[thisNode] = buttonPresses
+    return bbInputs
 
 
-# button has been pressed 1000 times
-for i in range(1000):
-    pressesLowPulses, pressesHighPulses = pressButton()
-    totalLowPulses += pressesLowPulses
-    totalHighPulses += pressesHighPulses
+buttonPresses = 0
+while any(v == None for v in bbInputs.values()):
+    buttonPresses += 1
+    bbInputs = pressButton(bbInputs)
+
 
 # for node in network:
 #     print(f"{node} - {network[node]}")
 
 print(
-    f"What do you get if you multiply the total number of low pulses sent by the total number of high pulses sent?"
+    f"What is the fewest number of button presses required to deliver a single low pulse to the module named rx?"
 )
-print(
-    f"Low pulse count: {totalLowPulses} * high pulse count: {totalHighPulses} = {totalLowPulses * totalHighPulses}"
-)  # answer 889662720 (high), 883726240
-# print(
-#     f"For second example expecting 11687500 so off by {11687500 - totalLowPulses * totalHighPulses}"
-# )
+print(f"Fewest button presses: {lcm(*bbInputs.values())}")  # answer 211712400442661
